@@ -1,0 +1,19 @@
+- name: "Install jdk and other dependencies required for gradle"
+  yum: state=present name={{ item }}
+  with_items:
+    - unzip
+    - java-1.8.0-openjdk-devel.x86_64
+  become: true
+
+- name: Extract Gradle
+  unarchive:
+    src: "https://services.gradle.org/distributions/{{gradle_zipfile}}"
+    dest: "/usr/local/share/"
+    remote_src: True
+  become: true
+  tags: gradle
+
+- name: Add Gradle executable symlink to path
+  shell: ln -s /usr/local/share/{{gradle_folder}}/bin/gradle /usr/local/bin/gradle creates=/usr/local/bin/gradle
+  become: true
+  tags: gradle

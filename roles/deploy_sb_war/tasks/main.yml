@@ -1,0 +1,55 @@
+- name: Setup the Git repo server-deployment
+  git: repo={{ git_repo_server }}
+       version={{ git_server_branch }}
+       dest={{ project_path_server }}
+       accept_hostkey=yes
+       key_file="/home/{{ ssh_user }}/.ssh/id_rsa"
+
+- name: Update contex.xml with db info
+  template:
+    src: conf_files/context.xml.j2
+    dest: /opt/tomcat/apache-tomcat-{{ tomcat_ver }}/conf/context.xml
+  become: true
+       
+- name: Build war
+  shell: "gradle war"
+  args:
+    chdir: "{{ project_path_server }}"
+
+- name: Copy build files to tomcat directory
+  shell: "cp -r {{ project_path_server }}/build/libs/*.war /opt/tomcat/apache-tomcat-{{ tomcat_ver }}/webapps/server.war"
+  become: true
+
+- name: Create certs folder
+  file: 
+    path: /usr/local/etc/ks/tomcat/certs/ 
+    mode: 0755
+    state: directory
+  become: true
+ 
+- name: copy db certs
+  copy:
+    src: certs/db_certs/{{ db_cert }}
+    dest: /usr/local/etc/ks/tomcat/certs/ApplicationSec.jks
+    mode: 0400
+  become: true
+  
+  
+- name : Update application.conf file
+  template:
+    src: conf_files/application.conf.j2
+    dest: /opt/tomcat/apache-tomcat-{{ tomcat_ver }}/conf/application.conf 
+  become: true
+  
+- name : update catalina.sh depending upon environment
+  template:
+    src: conf_files/catalina.sh.j2
+    dest: /opt/tomcat/apache-tomcat-{{ tomcat_ver }}/bin/catalina.sh
+  become: true
+  notify: enable tomcat startup
+  
+- name: Dissable setenforce to make sure nginx gets permission after tomcat is up and running
+  command: "setenforce 0"
+  notify: enable nginx startup
+  become: true
+

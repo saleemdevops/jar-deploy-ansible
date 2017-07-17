@@ -1,0 +1,55 @@
+---
+- name: NGINX | Installing NGINX repo rpm
+  yum:
+    name: epel-release
+  become: true
+
+- name: NGINX | Installing NGINX
+  yum:
+    name: nginx
+    state: present
+  become: true
+
+- name: NGINX | Update nginx config 
+  copy:
+    src: conf_files/nginx.conf
+    dest: /etc/nginx/nginx.conf
+  become: true
+  
+- name: NGINX | Update server https conf redirect to tomcat
+  template:
+    src: conf_files/server_conf/server_server.j2
+    dest: /etc/nginx/conf.d/server_server.conf
+  become: true
+  when: ("{{ https }}" == "on")
+
+- name: NGINX | Update server http conf redirect to tomcat
+  template:
+    src: conf_files/server_conf/server_server_http.j2
+    dest: /etc/nginx/conf.d/server_server.conf
+  become: true
+  when: ("{{ https }}" == "off")
+
+- name: NGINX | Delete default webpage conf
+  file:
+    path: /etc/nginx/conf.d/nginx-web-client.conf
+    state: absent
+  become: true
+  
+- name: Copy SSL certificate
+  copy: src="certs/{{ cert_type }}_cacert.pem"
+        dest="/etc/ssl/cacert.pem"        mode=0600
+  become: true
+
+- name: Copy SSL private key
+  copy: src="certs/{{ cert_type }}_privatekey.pem"
+        dest="/etc/ssl/privatekey.pem"        mode=0600
+  become: true
+
+- name: Set Nginx user
+  lineinfile: 
+    dest: /etc/nginx/nginx.conf
+    regexp: "^user"
+    line: "user {{ username }};"
+    state: present
+  notify: enable nginx startup

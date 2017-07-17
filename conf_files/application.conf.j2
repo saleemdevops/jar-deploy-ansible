@@ -1,0 +1,9 @@
+application.cors.allowOrigin="https://{{ webclient_public_ip }}"
+application.sb_mail.mail_smtp_host="{{ mail_server }}"
+application.sb_mail.mail_smtp_port="{{ mail_smtp_port }}"
+application.sb_mail.mail_from="{{ mail_from }}"
+application.sb_mail.mail_password="{{ mail_password }}"
+application.sb_mail.mail_ssl_enabled=false
+application.sb_mail.mail_is_auth_required=true
+application.user_url_frontend.domain="https://{{ webclient_public_ip }}/"
+application.session.cookie.secure=true

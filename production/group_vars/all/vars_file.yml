@@ -1,0 +1,40 @@
+---
+   # Default version info of software stack used
+   username: nginx
+   ssh_user: ansible
+   proj_dir: "/home/{{ ssh_user }}/sb"
+   nvm:
+     version: v0.33.2
+     node_version: 6.10.1
+     
+   tomcat_maj_ver: "tomcat-8"
+   tomcat_ver: "8.0.39"
+   tomcat_tarfile: "{{ tomcat_maj_ver }}/v{{ tomcat_ver }}/bin/apache-tomcat-{{ tomcat_ver }}.tar.gz"
+   
+   oracle_java_version: 8
+   gradle_version: "3.2"
+   gradle_zipfile: "gradle-{{gradle_version}}-all.zip"
+   gradle_folder:  "gradle-{{gradle_version}}"
+   
+   # Backend API Server war file generation info
+   git_repo_server: git@bitbucket.org:Repofolder/server.git
+   git_server_branch: "release/2.0.0-rc1"
+   project_path_server: "{{ proj_dir }}/sb-server"
+   
+   # Database Server details 
+   db_username: "username"
+   db_server: "192.168.0.12:53786"
+   db_cert: "d-production-mysqldb.jks"
+   
+   #Application settings
+   mail_server: "smtpax.application.com"
+   mail_smtp_port: 587
+   mail_from: "application@mydomain.com"
+   swagger_scan: "true"
+      
+   # Other info
+   ansible_cache_dir: /var/cache/ansible
+   https: "off"
+   cert_type: "prod"
+   reset_database: "no"
+   

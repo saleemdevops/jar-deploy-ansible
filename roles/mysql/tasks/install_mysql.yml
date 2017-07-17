@@ -1,0 +1,36 @@
+- name: MariaDB | Update MariaDB repo
+  copy:
+    src: conf_files/mysql/MariaDB.repo
+    dest: /etc/yum.repos.d/MariaDB.repo
+  become: true
+  
+- name: "MariaDB | Install Mariadb Packages"
+  yum: state=present update_cache=yes name={{ item }} 
+  with_items:
+     - MariaDB-server
+     - MariaDB-client
+     - MySQL-python
+  become: true
+
+- name: MariaDB | Ensure service is started
+  service:
+    name: "mariadb"
+    state: started
+    enabled: yes
+  become: true
+  
+- name: MariaDB | Update root password
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mariadb_root_password }}"
+    state: present
+  with_items:
+    - 127.0.0.1
+    - ::1
+    - localhost
+  become: true
+  
+  
+
+  

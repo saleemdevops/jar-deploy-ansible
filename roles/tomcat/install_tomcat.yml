@@ -1,0 +1,47 @@
+- name: Enable epel releases
+  yum:
+    name: epel-release
+  become: true
+
+- name: add group "tomcat"
+  group: name=tomcat
+  become: true
+    
+- name: Create home directory for tomcat
+  file:
+    path: /opt/tomcat/
+    state: directory
+    mode: 0755
+  become: true
+  
+- name: add user "tomcat"
+  user: name=tomcat group=tomcat home=/opt/tomcat shell=/sbin/nologin createhome=no
+  become: true
+  
+- name: Extract tomcat
+  unarchive:
+    src: "https://archive.apache.org/dist/tomcat/{{tomcat_tarfile}}"
+    dest: "/opt/tomcat/"
+    remote_src: True
+  become: true
+
+- name: Change config file folder permission tomcat
+  file:
+    path: /opt/tomcat/apache-tomcat-{{ tomcat_ver }}
+    mode: "g+rwx"
+    recurse: yes
+  become: true
+    
+- name: Change owner for tomcat folders
+  file:
+    path: "/opt/tomcat/apache-tomcat-{{ tomcat_ver }}"
+    group: tomcat
+    recurse: yes
+  become: true
+  
+- name: TOMCAT | Update tomcat startup service file
+  copy:
+    src: conf_files/tomcat.service
+    dest: /etc/systemd/system/tomcat.service
+  become: true
+  

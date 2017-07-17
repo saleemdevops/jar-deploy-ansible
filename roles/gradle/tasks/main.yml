@@ -1,0 +1,8 @@
+---
+- shell: gradle --version
+  register: gradle_current_ver
+  ignore_errors: True
+  
+- include: install_gradle.yml
+  tags: packages
+  when: gradle_current_ver.stdout.find('Gradle 3.2') == -1

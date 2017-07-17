@@ -1,0 +1,30 @@
+server {
+    listen      8080;
+    server_name {{ server_ip }};
+   
+    ssl on;
+    ssl_certificate /etc/ssl/cacert.pem;
+    ssl_certificate_key /etc/ssl/privatekey.pem;
+    fastcgi_param HTTPS on;
+    fastcgi_param HTTP_SCHEME https;
+    server_tokens off;
+
+    index       index.html;
+
+    include     mime.types;
+
+    location / {
+        proxy_pass http://127.0.0.1:8081/;
+    }
+
+    # Load configuration files for the default server block.
+    include /etc/nginx/default.d/*.conf;
+
+    error_page 404 /404.html;
+           location = /40x.html {
+        }
+
+    error_page 500 502 503 504 /50x.html;
+           location = /50x.html {
+        }
+}

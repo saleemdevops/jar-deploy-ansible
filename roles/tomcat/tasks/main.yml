@@ -1,0 +1,16 @@
+---
+- shell: service tomcat status
+  register: tomcat_current_ver
+  ignore_errors: True
+  become: true
+  
+- include: install_tomcat.yml
+  tags: packages
+  when: tomcat_current_ver.stdout.find('8.0.39') == -1
+
+- name: Update tomcat conf server.xml
+  template:
+    src: conf_files/tomcat_server_http.xml
+    dest: /opt/tomcat/apache-tomcat-{{ tomcat_ver }}/conf/server.xml
+  become: true
+  notify: enable tomcat startup

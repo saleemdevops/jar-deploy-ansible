@@ -1,0 +1,16 @@
+- name: "Install dependencies"
+  yum: state=present update_cache=yes name={{ item }}
+  with_items:
+     - vim
+     - wget
+     - curl
+     - git
+     - gcc
+     - openssl-devel
+  become: true
+
+- name: Create SSH keys directory
+  file: path="/home/{{ ssh_user }}/.ssh" state=directory mode=0700
+- name: Create the SSH private key file
+  copy: src="deploy_keys/deployment_key"
+        dest="/home/{{ ssh_user }}/.ssh/id_rsa"        mode=0600

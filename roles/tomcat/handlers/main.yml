@@ -1,0 +1,8 @@
+---
+- name: enable tomcat startup
+  systemd:
+    name: tomcat
+    enabled: yes
+    state: restarted
+  become: true
+

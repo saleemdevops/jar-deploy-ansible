@@ -1,0 +1,23 @@
+---
+- shell: mysql --version
+  register: mysql_current_ver
+  ignore_errors: True
+  
+- include: install_mysql.yml
+  tags: packages
+  when: mysql_current_ver.stdout.find('10.1.20-MariaDB') == -1
+
+- name: MariaDB | Update MariaDB conf
+  copy:
+    src: conf_files/mysql/server.cnf
+    dest: /etc/my.cnf.d/server.cnf
+  become: true
+  when: ("{{ reset_database }}" == "yes")
+
+- name: MariaDB | restart mariadb
+  service:
+    name: mariadb
+    state: restarted
+  become: true
+  
+
