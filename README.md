@@ -17,7 +17,7 @@ Step | Command                    | Description
 ## Configurations
 Clone the deployment repository and do the following changes before running the ansible-playbook
 
-    git clone https://github.com/naggappan/jar-deploy.git
+    git clone https://github.com/saleemdevops/jar-deploy-ansible.git
 
 ## Environment: Production run
     
